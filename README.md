@@ -6,7 +6,7 @@ Method: Use GECKO, a model developed by the authors, and apply the content learn
 
 ## Installation of GECKO (https://github.com/SysBioChalmers/GECKO)
 
-Github of the GECKO mentioned in the paper:
+__Github of the GECKO mentioned in the paper:__
 - Gecko v1.0 (https://github.com/SysBioChalmers/GECKO/releases/tag/v1.0)
   - README file of the installed source code indicates to install **SBML** (https://sbml.org/software/libsbml/libsbml-docs/installation/)
     - run installSBML.m in matlab to install SBML
@@ -14,7 +14,7 @@ Github of the GECKO mentioned in the paper:
     - make sure to add the IBM path with subfolders, initCobraToolbox.m will need it to run (IBM Cplex is one of the solver that is required)
 - not sure how to run it. I followed the steps of cloning the repo on their GECKO page, probably running v3? 
    
-Installing steps of the required packages for GECKO
+__Installing steps of the required packages for GECKO:__
   1) Gurobi (this is another solver, not sure if it is redundant with IBM Cplex, or if step 2) needs necessarily Gurobi)
      - Register @ Gurobi
      - install and run https://www.gurobi.com/downloads/gurobi-software/, restart computer
