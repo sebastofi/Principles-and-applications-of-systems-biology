@@ -21,8 +21,9 @@ __Installing steps of the required packages for GECKO:__
      - a new tab opens (https://portal.gurobi.com/iam/licenses/request/), generate a license key (one should be connected to the EPFL VPN, and ask the academic license) then, you request the license and it generates you a specific key with the format: grggetkey
      and run in your terminal (tutorial link: https://support.gurobi.com/hc/en-us/articles/4534161999889), save license at default location.
      - For running it, you should run in the command lines of matlab the following path:
-       '>>' cd /Library/gurobi1003/macos_universal2/matlab
-       '>>' gurobi_setup
+     
+     '>>' cd /Library/gurobi1003/macos_universal2/matlab
+     '>>' gurobi_setup
        tutorial-link (https://support.gurobi.com/hc/en-us/articles/4533938303505-How-do-I-install-Gurobi-for-Matlab-)
 
   2) RAVEN
