@@ -18,7 +18,13 @@ __Installing steps of the required packages for GECKO:__
   1) Gurobi (this is another solver, not sure if it is redundant with IBM Cplex, or if step 2) needs necessarily Gurobi)
      - Register @ Gurobi
      - install and run https://www.gurobi.com/downloads/gurobi-software/, restart computer
-     - a new tab opens (https://portal.gurobi.com/iam/licenses/request/), generate a license key and run in your terminal, save license at default lcation.. 
+     - a new tab opens (https://portal.gurobi.com/iam/licenses/request/), generate a license key (one should be connected to the EPFL VPN, and ask the academic license) then, you request the license and it generates you a specific key with the format: grggetkey
+     and run in your terminal (tutorial link: https://support.gurobi.com/hc/en-us/articles/4534161999889), save license at default location.
+     - For running it, you should run in the command lines of matlab the following path:
+       >>cd /Library/gurobi1003/macos_universal2/matlab
+       >>gurobi_setup
+       tutorial-link (https://support.gurobi.com/hc/en-us/articles/4533938303505-How-do-I-install-Gurobi-for-Matlab-)
+
   2) RAVEN
      - clone repository (git clone --depth=1 https://github.com/SysBioChalmers/RAVEN.git)
      - change to folder, run 'checkInstallation'
