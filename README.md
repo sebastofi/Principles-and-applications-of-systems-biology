@@ -10,11 +10,12 @@ Github of the GECKO mentioned in the paper:
 - Gecko v1.0 (https://github.com/SysBioChalmers/GECKO/releases/tag/v1.0)
   - README file of the installed source code indicates to install **SBML** (https://sbml.org/software/libsbml/libsbml-docs/installation/)
     - run installSBML.m in matlab to install SBML
+  - **cobratoolbox** (https://github.com/opencobra/cobratoolbox)
    
 Installing steps of the required packages for GECKO
   1) Gurobi
-    - Register @ Gurobi
-    - install and run, restart computer
-  2) RAVEN
+       - Register @ Gurobi
+       - install and run, restart computer
+  3) RAVEN
     - 
-  3) ..
+  4) ..
