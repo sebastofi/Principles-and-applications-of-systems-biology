@@ -51,24 +51,45 @@ ecModel = getKcatAcrossIsozymes(ecModel);
 % STEP 12 Get standard kcat
 [ecModel, rxnsMissingGPR, standardMW, standardKcat] = getStandardKcat(ecModel);
 
-% SAVE
-filename = 'ecYeast_v8.6.2.mat';
-save(filename, 'ecModel','params');
-
-%%   This part was just for testing
+% STEP 13 Apply kcat constraints from ecModel.ec.kcat to ecModel.S
 ecModel = applyKcatConstraints(ecModel);
-Ptot  = params.Ptot;
-f     = params.f;
-sigma = params.sigma;
-ecModel = setProtPoolSize(ecModel,Ptot,f,sigma);
 
+% STEP 14 Set upper bound of protein pool
+!!!!!!!!!!!!!!!!!!!!! THIS WHERE YOU NEED TO CHANGE VALUES IF YOU NEED DIFFERENT SIGMA
+params.Ptot =  0.4005; % g/gDW
+params.f = 0.4461; % g/g
+params.sigma = 0.51; % 51 per-cent saturation
+ecModel = setProtPoolSize(ecModel,params.Ptot,params.f,params.sigma);
 
-id_dilution_rate = find(ismember(ecModel.rxnNames,'biomass pseudoreaction'));      
-id_glucose_uptake = find(ismember(ecModel.rxnNames,'D-glucose exchange'));
+%% STAGE 3: model tuning
+% STEP 15 Test maximum growth rate
 ecModel = setParam(ecModel,'lb','r_1714',-1000);
 ecModel = setParam(ecModel,'obj','r_4041',1);
 sol = solveLP(ecModel,1);
 bioRxnIdx = getIndexes(ecModel,params.bioRxn,'rxns');
 fprintf('Growth rate: %f /hour.\n', sol.x(bioRxnIdx))
 
+% STEP 17 Sensitivity tuning
+ecModel = setProtPoolSize(ecModel);
+[ecModel, tunedKcats] = sensitivityTuning(ecModel);
+struct2table(tunedKcats)
+
+% STEP 18 Curate kcat values based on kcat tuning
+rxnIdx = find(strcmp(kcatList_merged.rxns,'r_0079'));
+doc fuzzyKcatMatching % To check the meaning of wildcardLvl and origin.
+kcatList_merged.wildcardLvl(rxnIdx) % 0: no EC number wildcard.
+kcatList_merged.origin(rxnIdx) % 4: any organism, any substrate, kcat.
+kcatList_merged.eccodes(rxnIdx) % EC number 6.3.5.3.
+
+enzMW = ecModel.ec.mw(strcmp(ecModel.ec.enzymes,'P38972')); % Get MW of the enzyme.
+convKcat = 2.15; % umol/min/mg protein, same as mmol/min/g protein.
+convKcat = convKcat / 1000; % mol/min/g protein.
+convKcat = convKcat / 60; % mol/sec/g protein.
+convKcat = convKcat * enzMW; % mol/sec/mol protein, same as 1/sec.
+ecModel = setKcatForReactions(ecModel,'r_0079',convKcat);
+ecModel = applyKcatConstraints(ecModel);
+
+% SAVE
+filename = 'ecYeast_v8.6.2.mat';
+save(filename, 'ecModel','params');
 
