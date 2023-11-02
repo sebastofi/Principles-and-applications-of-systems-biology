@@ -12,7 +12,8 @@ __Github of the GECKO mentioned in the paper:__
     - run installSBML.m in matlab to install SBML
   - **cobratoolbox** (https://github.com/opencobra/cobratoolbox)
     - make sure to add the IBM path with subfolders, initCobraToolbox.m will need it to run (IBM Cplex is one of the solver that is required)
-- not sure how to run it. I followed the steps of cloning the repo on their GECKO page, probably running v3? 
+- not sure how to run it. I followed the steps of cloning the repo on their GECKO page, probably running v3?
+- FORGET THIS, WE RUN IT WITH GECKO 3  
    
 __Installing steps of the required packages for GECKO:__
   1) Gurobi (this is another solver, not sure if it is redundant with IBM Cplex, or if step 2) needs necessarily Gurobi)
