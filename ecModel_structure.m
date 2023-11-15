@@ -89,5 +89,7 @@ ecModel = setKcatForReactions(ecModel,'r_0079',convKcat);
 ecModel = applyKcatConstraints(ecModel);
 
 % SAVE
+filename = 'Yeast_v8.6.2.mat';
+save (filename,'model')
 filename = 'ecYeast_v8.6.2.mat';
 save(filename, 'ecModel','params');
