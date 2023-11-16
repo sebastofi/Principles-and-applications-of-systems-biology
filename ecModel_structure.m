@@ -62,7 +62,6 @@ ecModel = setProtPoolSize(ecModel,params.Ptot,params.f,params.sigma);
 
 %% STAGE 3: model tuning
 % STEP 15 Test maximum growth rate
-find(contains(ecModel.rxns,'r_4041'))
 ecModel = setParam(ecModel,'lb','r_1714',-1000);
 ecModel = setParam(ecModel,'obj','r_4041',1);
 sol = solveLP(ecModel,1);
@@ -90,6 +89,8 @@ ecModel = setKcatForReactions(ecModel,'r_0079',convKcat);
 ecModel = applyKcatConstraints(ecModel);
 
 % SAVE
+filename = 'Yeast_v8.6.2.mat';
+save (filename,'model')
 filename = 'ecYeast_v8.6.2.mat';
 save(filename, 'ecModel','params');
 
