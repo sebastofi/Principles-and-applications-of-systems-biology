@@ -62,6 +62,7 @@ ecModel = setProtPoolSize(ecModel,params.Ptot,params.f,params.sigma);
 
 %% STAGE 3: model tuning
 % STEP 15 Test maximum growth rate
+find(contains(ecModel.rxns,'r_4041'))
 ecModel = setParam(ecModel,'lb','r_1714',-1000);
 ecModel = setParam(ecModel,'obj','r_4041',1);
 sol = solveLP(ecModel,1);
@@ -75,7 +76,7 @@ struct2table(tunedKcats)
 
 % STEP 18 Curate kcat values based on kcat tuning
 rxnIdx = find(strcmp(kcatList_merged.rxns,'r_0079'));
-doc fuzzyKcatMatching % To check the meaning of wildcardLvl and origin.
+%doc fuzzyKcatMatching % To check the meaning of wildcardLvl and origin.
 kcatList_merged.wildcardLvl(rxnIdx) % 0: no EC number wildcard.
 kcatList_merged.origin(rxnIdx) % 4: any organism, any substrate, kcat.
 kcatList_merged.eccodes(rxnIdx) % EC number 6.3.5.3.
@@ -91,3 +92,45 @@ ecModel = applyKcatConstraints(ecModel);
 % SAVE
 filename = 'ecYeast_v8.6.2.mat';
 save(filename, 'ecModel','params');
+
+
+%% STAGE 4: integrate proteomics data
+
+% STEP 19 Load proteomics data and constrain ecModel
+protData = loadProtData(3); %Number of replicates, only one experiment.
+ecModelProt = fillEnzConcs(ecModel,protData);
+ecModelProt = constrainEnzConcs(ecModelProt);
+
+% STEP 20 Update protein pool / % STEP 21 Load flux data
+fluxData = loadFluxData();
+% change Ptot (g/gDW) to 0.283
+fluxData.Ptot = 0.283
+ecModelProt = updateProtPool(ecModelProt,fluxData.Ptot(1));
+% Use first condition.
+ecModelProt = constrainFluxData(ecModelProt,fluxData,1,'max','loose');
+% Observe if the intended growth rate was reached.
+sol = solveLP(ecModelProt);
+fprintf('Growth rate that is reached: %f /hour.\n', abs(sol.f))
+
+% STEP 22 Enzyme concentrations are flexibilized (increased), until we
+% reach 0.1
+[ecModelProt, flexEnz] = flexibilizeEnzConcs(ecModelProt,fluxData.grRate(1),10);
+% test also if the initial unconstrained model performs the same
+model = loadConventionalGEM();
+model = constrainFluxData(model,fluxData);
+sol = solveLP(model)
+fprintf('Growth rate that is reached: %f /hour.\n', abs(sol.f))
+% ecModel reaches same growth rate as conventional model
+sol = solveLP(ecModelProt) %FBA
+
+%inspect flexibilized enzymes
+struct2table(flexEnz)
+
+filename = 'ecYeastProt_v8.6.2.mat';
+save(filename, 'ecModelProt','params');
+
+
+
+
+
+
