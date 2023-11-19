@@ -33,23 +33,43 @@ model.ub(id_NGAM) % fixed to 0.7
 
 ecModel.ub(id_O2)
 
-%% set the NGAM
+find(contains(model.rxnNames,'associated')); 
+model.rxnNames(3414) %NGAM, 'r_4046'
+
+find(contains(model.rxnNames,'biomass'));
+a = model.S(3409) %biomass pseudoreaction | 'r_4041'
+
+%% input from GPT how to set GAM
+
+% model.S(:, 3409) = model.S(:, 3409) * (31 / model.c(3409));
+% 
+% % update growth maximization as the objective function.
+% model = setParam(model,'obj','r_4041',1);
+
+%% change GAM function extracted from GECKO
+% changeGAM(ecModel,GAM,NGAM)
+
+GAM = 16
+bioPos = strcmp(model.rxnNames,'biomass pseudoreaction');
+for i = 1:length(model.mets)
+    S_ix  = model.S(i,bioPos);
+    isGAM = sum(strcmp({'ATP [cytoplasm]','ADP [cytoplasm]','H2O [cytoplasm]', ...
+        'H+ [cytoplasm]','phosphate [cytoplasm]'},model.metNames{i})) == 1;
+    if S_ix ~= 0 && isGAM
+        model.S(i,bioPos) = sign(S_ix)*GAM;
+    end
+end
+
+%% set the GAM and NGAM
 % After the fitting procedure, GAMfitted was equal to 31 mmol/gDW for aerobic conditions
 % and 16 mmol/gDW for anaerobic conditions. (from supplementary
 % information)
 
-% GAM_ae = 31
-% NGAM = 0.7
-% ecModel = changeGAM(ecModel,GAM_ae,NGAM);
-% model = changeGAM(model, GAM_ae, NGAM)
-% 
-% ana = anaerobicModel(ecModel)
-
 model = setParam(model,'lb','r_4046',19.1);     %max19.1
 model = setParam(model,'ub','r_4046',19.1);     %max19.1
 
-ecModel = setParam(ecModel,'lb','r_4046',1);    %max200+
-ecModel = setParam(ecModel,'ub','r_4046',1);    %max200+
+ecModel = setParam(ecModel,'lb','r_4046',200);    %max200+
+ecModel = setParam(ecModel,'ub','r_4046',200);    %max200+
 %% experimental data
 substrate = ["Glucose";"O2";"CO2";"Ethanol"];
 consat38dC = [77.5472161309578;29.4322794340087;-150.905276243908;-122.233091905334];  %mmol/gDW
@@ -61,17 +81,21 @@ stdv = [6.1383970094143;6.32511023558826;12.6502204711771;11.1342275574192];
 %transform consat38dC ??? % not sure how this is done, transforms it about right
 %tough for all but the o2 cons.
 
-% consat38dC = abs(consat38dC) * 0.1; % mmol/gDW * 1/h
-% stdv = stdv * 0.1 % mmol/gDW * 1/h
+consat38dC = abs(consat38dC) * 0.1; % mmol/gDW * 1/h
+stdv = stdv * 0.1 % mmol/gDW * 1/h
 
-consat38dC = abs(consat38dC)
+% consat38dC = abs(consat38dC)
 
-%% FBA for model
+%% FBA and manual value readout
+
+% sol = solveLP(ecModel,1);
+% bioRxnIdx = getIndexes(ecModel,params.bioRxn,'rxns');
+% fprintf('Growth rate: %f /hour.\n', sol.x(bioRxnIdx))
 
 %model
-sol = solveLP(model)
+sol = solveLP(model, 1)
 printFluxes(model,sol.x, false)
-%values
+%values @ NGAM 19.1
 mod_glucose = -1
 mod_O2 = -5.9817
 mod_CO2 = 5.9824
@@ -82,13 +106,13 @@ Yeast = abs([mod_glucose; mod_O2; mod_CO2; mod_EtOH])
 sol = solveLP(ecModel)
 printFluxes(ecModel,sol.x, false)
 %values
-ec_glucose = --24.7471
+ec_glucose = -24.7471
 ec_O2 = -0.40124
 ec_CO2 = 42.9916
 ec_EtOH = 40.9157
 ecYeast = abs([ec_glucose; ec_O2; ec_CO2; ec_EtOH])
 
-%% Pplot
+%% plot
 
 barWidth = 0.3; % Width of each bar
 
