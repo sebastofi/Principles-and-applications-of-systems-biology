@@ -49,7 +49,7 @@ a = model.S(3409) %biomass pseudoreaction | 'r_4041'
 %% change GAM function extracted from GECKO
 % changeGAM(ecModel,GAM,NGAM)
 
-GAM = 16
+GAM = 31
 bioPos = strcmp(model.rxnNames,'biomass pseudoreaction');
 for i = 1:length(model.mets)
     S_ix  = model.S(i,bioPos);
@@ -68,8 +68,8 @@ end
 model = setParam(model,'lb','r_4046',19.1);     %max19.1
 model = setParam(model,'ub','r_4046',19.1);     %max19.1
 
-ecModel = setParam(ecModel,'lb','r_4046',200);    %max200+
-ecModel = setParam(ecModel,'ub','r_4046',200);    %max200+
+ecModel = setParam(ecModel,'lb','r_4046',-0.7);    %max200+
+ecModel = setParam(ecModel,'ub','r_4046',0.7);    %max200+
 %% experimental data
 substrate = ["Glucose";"O2";"CO2";"Ethanol"];
 consat38dC = [77.5472161309578;29.4322794340087;-150.905276243908;-122.233091905334];  %mmol/gDW
@@ -106,10 +106,10 @@ Yeast = abs([mod_glucose; mod_O2; mod_CO2; mod_EtOH])
 sol = solveLP(ecModel)
 printFluxes(ecModel,sol.x, false)
 %values
-ec_glucose = -24.7471
+ec_glucose = -24.7471/3
 ec_O2 = -0.40124
-ec_CO2 = 42.9916
-ec_EtOH = 40.9157
+ec_CO2 = 42.9916/3
+ec_EtOH = 40.9157/3
 ecYeast = abs([ec_glucose; ec_O2; ec_CO2; ec_EtOH])
 
 %% plot
