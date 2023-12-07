@@ -47,12 +47,15 @@ ecModel = setParam(ecModel,'ub','r_4046',0.7);    %max200+  %default=0.7
 
 %% objective function
 
-ecModel = setParam(ecModel, 'obj', 'r_1714', 1);
-ecModel = setParam(ecModel, 'lb', params.bioRxn, 0.3);
+ecModel = setParam(ecModel, 'obj', id_glucose, 1);        %set objective function
+ecModel = setParam(ecModel, 'lb', params.bioRxn, 0.3);  %growth rate
+
+% model = setParam(model, 'obj', 'r_1714', 1);
+% model = setParam(model, 'lb', params.bioRxn, 0.3);
 
 %% experimental data
 substrate = ["Glucose";"O2";"CO2";"Ethanol"];
-consat38dC = [77.5472161309578;29.4322794340087;-150.905276243908;-122.233091905334];  %mmol/gDW
+consat38dC = [77.5472161309578;29.4322794340087;-150.905276243908;-122.233091905334];  %mmol/gDW    %what was cons again?
 stdv = [6.1383970094143;6.32511023558826;12.6502204711771;11.1342275574192];
 %reference: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4966989/
 %from supplementary table 1, %Lahtvee 2016
@@ -122,6 +125,6 @@ xticks(1:numel(substrate)); %%%%% label doesnt move this way
 ylabel('Flux [mmol/gDWh]');
 title('High Energy Demand Fluxes');
 
-legend('Experimental data (0.1 1/h - 38°C)', 'ecYeast7 model (0.3 1/h)', 'Yeast7 model (0.000408 1/h)');
+legend('Experimental data (0.1 1/h - 38°C)', 'ecYeast8 model (0.3 1/h)', 'Yeast8 model (0.000408 1/h)');
 legend('Location', 'northwest', 'Box', 'off'); % Adjust legend properties
 
