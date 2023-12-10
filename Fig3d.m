@@ -2,6 +2,7 @@
 
 clear;
 clc;
+
 load('Yeast_v8.6.2.mat')
 load('ecYeast_v8.6.2.mat')
 
@@ -125,6 +126,6 @@ xticks(1:numel(substrate)); %%%%% label doesnt move this way
 ylabel('Flux [mmol/gDWh]');
 title('High Energy Demand Fluxes');
 
-legend('Experimental data (0.1 1/h - 38°C)', 'ecYeast8 model (0.3 1/h)', 'Yeast8 model (0.000408 1/h)');
+legend('Exp. data (0.1 1/h - 38°C)', 'ecYeast8 (0.3 1/h)', 'Yeast8 (0.000408 1/h)');
 legend('Location', 'northwest', 'Box', 'off'); % Adjust legend properties
 
