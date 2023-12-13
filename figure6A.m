@@ -26,25 +26,24 @@ ecModel = setParam(ecModel,'ub','r_2045',0); % Block the L-serine transport betw
 ecModel = setParam(ecModel,'ub','r_0659',0); % Block the conversion of isocitrate to 2-oxoglutarate in the cytoplasm via NADPH
 
 dilution_rate = 0.1:0.025:0.38;
-
 %% Wild Type
 
 flux_o2 = zeros(size(dilution_rate));
 flux_co2 = zeros(size(dilution_rate));
 
 % Set objective coeff of glucose to 1
-ecModel = setParam(ecModel,'obj','r_1714',1); 
+ecModel = setParam(ecModel,'obj','r_1714',1);
 
 for i = 1:numel(dilution_rate)
     % Set specific growth rate to dilution rate value
     model = setParam(ecModel, 'lb','r_2111',dilution_rate(i));
-    sol=solveLP(model);
+    sol=solveFBAmodelCplex(model);
     if ~isempty(sol.x)
         % Set glucose uptake to optimal value
         model = setParam(model,'lb','r_1714',sol.x(id_glc)*1.01);
         % Minimize protein pool usage
         model = setParam(model,'obj','prot_pool_exchange',1);
-        sol=solveLP(model);
+        sol=solveFBAmodelCplex(model);
         flux_o2(i) = sol.x(id_o2);
         flux_co2(i) = sol.x(id_co2);
     end
@@ -71,18 +70,18 @@ flux_o2_ko = zeros(size(dilution_rate));
 flux_co2_ko = zeros(size(dilution_rate));
 
 % Set objective coeff of glucose to 1
-ecModel = setParam(ecModel,'obj','r_1714',1); 
+ecModel = setParam(ecModel,'obj','r_1714',1);
 
 for i = 1:numel(dilution_rate)
     % Set specific growth rate to dilution rate value
     model = setParam(ecModel, 'lb','r_2111',dilution_rate(i));
-    sol=solveLP(model);
+    sol=solveFBAmodelCplex(model);
     if ~isempty(sol.x)
         % Set glucose uptake to optimal value
         model = setParam(model,'lb','r_1714',sol.x(id_glc)*1.01);
         % Minimize protein pool usage
         model = setParam(model,'obj','prot_pool_exchange',1);
-        sol=solveLP(model);
+        sol=solveFBAmodelCplex(model);
         flux_o2_ko(i) = sol.x(id_o2);
         flux_co2_ko(i) = sol.x(id_co2);
     end
@@ -95,7 +94,6 @@ exp_o2_ko = [2.5, 3.5, 4.6, 4.3, 4];
 exp_co2_ko = [3.2, 4.2, 6.1, 10, 16];
 exp_dilution = [0.1, 0.15, 0.2, 0.25, 0.28, 0.3, 0.33, 0.36, 0.38];
 exp_dilution_ko = 0.1:0.05:0.3;
-
 %% Plots
 
 figure
@@ -105,9 +103,9 @@ hold on
 plot(dilution_rate,abs(flux_co2),'-',LineWidth=1.5,Color=[0.4940 0.1840 0.5560]);
 hold on
 % Knockout
-plot(dilution_rate(1:floor(numel(dilution_rate)*3/4)),abs(flux_o2_ko(1:floor(numel(dilution_rate)*3/4))),Color=[0 0.4470 0.7410],LineWidth=2,LineStyle="--"); 
+plot(dilution_rate(1:floor(numel(dilution_rate)*3/4)),abs(flux_o2_ko(1:floor(numel(dilution_rate)*3/4))),Color=[0 0.4470 0.7410],LineWidth=2,LineStyle="--");
 hold on
-plot(dilution_rate(1:floor(numel(dilution_rate)*3/4)),abs(flux_co2_ko(1:floor(numel(dilution_rate)*3/4))),Color=[0.4940 0.1840 0.5560],LineWidth=2,LineStyle="--"); 
+plot(dilution_rate(1:floor(numel(dilution_rate)*3/4)),abs(flux_co2_ko(1:floor(numel(dilution_rate)*3/4))),Color=[0.4940 0.1840 0.5560],LineWidth=2,LineStyle="--");
 hold on
 % Wild type experimental
 scatter(exp_dilution,exp_o2,Marker='square',LineWidth=1.5,MarkerEdgeColor=[0 0.4470 0.7410],MarkerFaceColor=[0 0.4470 0.7410]);
